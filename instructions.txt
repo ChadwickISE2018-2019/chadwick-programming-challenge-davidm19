@@ -1,0 +1,24 @@
+We've set up a programming challenge for you to test your skills. To complete it, you will
+need to install Vagrant (https://www.vagrantup.com/) and VirtualBox (https://www.virtualbox.org/).
+
+While you're waiting for those to download run these commands
+```
+cp pre-commit ./git/hooks
+chmod -x .git/hooks/pre-commit
+git config --global commit.template git-commit-template.txt
+```
+
+The first two commands sets up your repository so you don't commit to the master branch. The last command sets up your commit template so you know what an acceptable commit is.
+
+Once you have installed these two dependencies, you can run `vagrant up`. This will download the virtual environment.
+
+To access the virtual environment run `vagrant ssh`.
+
+When you're ready to begin the challenge, you will run `python3.6 /vagrant/setup.py`. This will
+start the challenge. A set of files will be created in the same directory as the Vagrantfile.
+Start by reading `README.md`. Note: a timer is started when you run this command.
+You will have 4 hours to complete the challenge.
+
+Good luck,
+
+The VoterLabs team!

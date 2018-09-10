@@ -41,6 +41,7 @@ Examples:
 def get_customer():
     session = Session()
     customer_id = request.args.get('id')
+    print("Request is: " + str(request))
     customer = session.query(Customer).filter(Customer.id == 1).one()
     customer_info = { "first_name" : customer.first_name
                     , "last_name" : customer.last_name

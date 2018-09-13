@@ -41,8 +41,12 @@ Examples:
 def get_customer():
     session = Session()
     customer_id = request.args.get('id')
+    customer_firstname = request.args.get('first_name')
+    customer_lastname = request.args.get('last_name')
+    customer_email = request.args.get('email')
     print("Request is: " + str(request))
-    customer = session.query(Customer).filter(Customer.id == 1).one()
+    customer = session.query(Customer).filter(Customer.id == customer_id).one()
+    #USE IF STATEMENT TO CHECK IF ITEM EXISTS; IF NOT, THEN session.query(CUstomer).filter(Customer.thingy==customer_thingy).one()
     customer_info = { "first_name" : customer.first_name
                     , "last_name" : customer.last_name
                     , "email" : customer.email
@@ -50,32 +54,18 @@ def get_customer():
                     }
     return flask.jsonify([customer_info]), 200
 
-'''
-Adds a customer to the database. The request expects the
-header: "Content-Type: application/json" and json object containing at least 
-a first_name and last_name field.
-
-Examples:
-# Creates a new Customer Record named John Doe
-curl -H "Content-Type: application/json" \
-     -X POST -d '{"first_name": "John", "last_name": "Doe"}' \
-     'localhost:8888/customer'
-
-# Invalid request (must have a first_name and a last_name)
-curl -H "Content-Type: application/json" \
-     -X POST -d '{"last_name": "Doe"}' \
-     'localhost:8888/customer'
-
-# Creates a new Customer Record named John Doe with the email johndoe@yahoo.com
-curl -H "Content-Type: application/json" \
-     -X POST -d '{"first_name": "John", "last_name": "Doe", "email": "johndoe@yahoo.com"}' \
-     'localhost:8888/customer'
-
-'''
 def add_customer():
+    session = Session()
     post = request.get_json()
+    if "first_name" not in post or "last_name" not in post:
+        return "ERROR: Customer must have first AND last name \n", 404
+    customer = Customer(first_name = post["first_name"], last_name=post["last_name"])
+    if "email" in post:
+        customer.email = post["email"]
+    session.add(customer)
+    session.commit
     print(post)
-    return "TODO: Implement", 200
+    return "Customer successfully added! \n", 201
 
 
 '''

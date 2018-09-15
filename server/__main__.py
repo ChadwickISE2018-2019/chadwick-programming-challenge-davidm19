@@ -1,7 +1,9 @@
+
 import flask
 from flask import Flask, request
 from server.dao import Customer, engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import exists
 
 Session = sessionmaker(bind=engine)
 app = Flask(__name__)
@@ -38,6 +40,7 @@ Examples:
   # Returns all customers with the first_name 'Bill' and last_name 'Johnson'
   $ curl 'localhost:8888/customer?first_name=Bill&last_name=Johnson'
 '''
+#DONE
 def get_customer():
     session = Session()
     customer_id = request.args.get('id')
@@ -45,15 +48,46 @@ def get_customer():
     customer_lastname = request.args.get('last_name')
     customer_email = request.args.get('email')
     print("Request is: " + str(request))
-    customer = session.query(Customer).filter(Customer.id == customer_id).one()
-    #USE IF STATEMENT TO CHECK IF ITEM EXISTS; IF NOT, THEN session.query(CUstomer).filter(Customer.thingy==customer_thingy).one()
-    customer_info = { "first_name" : customer.first_name
+    query = session.query(Customer)
+    if customer_firstname is not None:
+        query = query.filter(Customer.first_name == customer_firstname)
+    if customer_lastname is not None:
+        query = query.filter(Customer.last_name == customer_lastname)
+    if customer_email is not None:
+        query = query.filter(Customer.email == customer_email)
+    if customer_id is not None:
+        query = query.filter(Customer.id == customer_id)
+    customers = query.all()
+    customer_list = []
+    for customer in customers:
+        customer_info = { "first_name" : customer.first_name
                     , "last_name" : customer.last_name
                     , "email" : customer.email
                     , "id" : customer.id
                     }
-    return flask.jsonify([customer_info]), 200
+        customer_list.append(customer_info)
+    return flask.jsonify(customer_list), 200
 
+
+'''
+Adds a customer to the database. The request expects the
+header: "Content-Type: application/json" and json object containing at least 
+a first_name and last_name field.
+ Examples:
+# Creates a new Customer Record named John Doe
+curl -H "Content-Type: application/json" \
+     -X POST -d '{"first_name": "John", "last_name": "Doe"}' \
+     'localhost:8888/customer'
+ # Invalid request (must have a first_name and a last_name)
+curl -H "Content-Type: application/json" \
+     -X POST -d '{"last_name": "Doe"}' \
+     'localhost:8888/customer'
+ # Creates a new Customer Record named John Doe with the email johndoe@yahoo.com
+curl -H "Content-Type: application/json" \
+     -X POST -d '{"first_name": "John", "last_name": "Doe", "email": "johndoe@yahoo.com"}' \
+     'localhost:8888/customer'
+'''
+#DONE
 def add_customer():
     session = Session()
     post = request.get_json()
@@ -63,7 +97,7 @@ def add_customer():
     if "email" in post:
         customer.email = post["email"]
     session.add(customer)
-    session.commit
+    session.commit()
     print(post)
     return "Customer successfully added! \n", 201
 
@@ -86,10 +120,24 @@ curl -H "Content-Type: application/json" \
      -X PUT -d '{"id": 1, "email": "john@doe.com"}' \
      'localhost:8888/customer'
 '''
+#DONE
 def update_customer():
+    session = Session()
     post = request.get_json()
+    if "id" not in post:
+        return "ERROR: Not a valid Customer ID \n", 404
+    customer_id = post["id"]
+    customer = session.query(Customer).filter(Customer.id == customer_id).one()
+    if "first_name" in post:
+        customer.first_name = post["first_name"]
+    if "last_name" in post:
+        customer.last_name = post["last_name"]
+    if "email" in post:
+        customer.email = post["email"]
+    session.add(customer)
+    session.commit()
     print(post)
-    return "TODO: Implement", 200
+    return "Customer successfully updated! \n", 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8888)

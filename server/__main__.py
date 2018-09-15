@@ -3,7 +3,6 @@ import flask
 from flask import Flask, request
 from server.dao import Customer, engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import exists
 
 Session = sessionmaker(bind=engine)
 app = Flask(__name__)

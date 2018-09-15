@@ -1,4 +1,3 @@
-
 import flask
 from flask import Flask, request
 from server.dao import Customer, engine
@@ -39,7 +38,7 @@ Examples:
   # Returns all customers with the first_name 'Bill' and last_name 'Johnson'
   $ curl 'localhost:8888/customer?first_name=Bill&last_name=Johnson'
 '''
-#DONE
+#DONE!
 def get_customer():
     session = Session()
     customer_id = request.args.get('id')
@@ -86,7 +85,7 @@ curl -H "Content-Type: application/json" \
      -X POST -d '{"first_name": "John", "last_name": "Doe", "email": "johndoe@yahoo.com"}' \
      'localhost:8888/customer'
 '''
-#DONE
+#DONE!
 def add_customer():
     session = Session()
     post = request.get_json()
@@ -119,7 +118,7 @@ curl -H "Content-Type: application/json" \
      -X PUT -d '{"id": 1, "email": "john@doe.com"}' \
      'localhost:8888/customer'
 '''
-#DONE
+#DONE!
 def update_customer():
     session = Session()
     post = request.get_json()
